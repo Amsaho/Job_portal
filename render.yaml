@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: flask-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://amlansahoo4feb:Amlan2003@cluster0.yvgaw.mongodb.net/face_recognition?retryWrites=true&w=majority&appName=Cluster0
+      - key: CLOUD_NAME
+        value: dpdqhtova
+      - key: CLOUD_API_KEY
+        value: 419217971722169
+      - key: CLOUD_API_SECRET
+        value: ak01Sgbsa4CqxUWW97r2SLrI6Ec
