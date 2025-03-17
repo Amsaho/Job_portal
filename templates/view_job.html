@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .company-logo {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">{{ job.title }}</h1>
+        <p><strong>Company:</strong> {{ job.company }}</p>
+        {% if job.logo_url %}
+            <img src="{{ job.logo_url }}" alt="{{ job.company }} Logo" class="company-logo">
+        {% endif %}
+        <p><strong>Description:</strong> {{ job.description }}</p>
+        <p><strong>Skills:</strong> {{ job.skills }}</p>
+        <p><strong>Experience:</strong> {{ job.experience }}</p>
+        <p><strong>Projects:</strong> {{ job.projects }}</p>
+        <p><strong>Education:</strong> {{ job.education }}</p>
+        <p><strong>Qualifications:</strong> {{ job.qualifications }}</p>
+        {% if job.career_page %}
+            <p><a href="{{ job.career_page }}" target="_blank">Visit Company Career Page</a></p>
+        {% endif %}
+        <a href="{{ url_for('admin_jobs') }}" class="btn btn-secondary">Back to Job Listings</a>
+    </div>
+</body>
+</html>
