@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login Account</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body onload="init()">
+    <div class="container mt-5">
+        <h1 class="text-center">Admin Login Account</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <video id="video" width="100%" height="auto" autoplay class="mb-3"></video>
+                <canvas id="canvas" width="400" height="280" style="display:none;"></canvas>
+                <div class="form-group">
+                    <label for="name">Please enter your name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input  type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button onclick="admin_login()" class="btn btn-primary btn-block">Login</button>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

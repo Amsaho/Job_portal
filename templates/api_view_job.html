@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Posting - {{ job.job_title }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      padding: 0;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    .company-logo {
+      max-width: 100px;
+      height: auto;
+    }
+    .job-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .job-details {
+      margin-bottom: 20px;
+    }
+    .job-details p {
+      margin: 5px 0;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      border-bottom: 2px solid #2c3e50;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+    .section ul {
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+    .section ul li {
+      margin-bottom: 5px;
+    }
+    .salary {
+      font-weight: bold;
+      color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Display company logo if available -->
+    {% if job.company_logo %}
+      <img src="{{ job.company_logo }}" alt="{{ job.company_name }} Logo" class="company-logo">
+    {% endif %}
+    <h1 class="job-title">{{ job.job_title }} (Remote)</h1>
+    <div class="job-details">
+      <p><strong>Company:</strong> {{ job.company_name }}</p>
+      <p><strong>Location:</strong> {{ job.location }} (Remote)</p>
+      <p><strong>Posted:</strong> {{ job.ago_time }}</p>
+    </div>
+  </header>
+
+  <div class="section">
+    <h2>Job Description</h2>
+    <!-- Render description with line breaks -->
+    <p>{{ job.description }}</p>
+  </div>
+
+  <div class="section">
+    <h2>Salary</h2>
+    <p class="salary">{{ job.salary if job.salary else "Not specified" }}</p>
+  </div>
+
+  <footer>
+    <p><strong>How to Apply:</strong> If you are excited about this opportunity and meet the requirements, we encourage you to apply and join our team at {{ job.company_name }}.</p>
+    <a href='{{ job.url}}'>Apply now</a>
+  </footer>
+</body>
+</html>

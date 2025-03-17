@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Jobs</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Manage Job Roles</h1>
+        
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Job Form -->
+        <form method="POST" action="{{ url_for('admin_jobs') }}">
+            <input type="hidden" name="job_id" id="job_id" value="">
+            <div class="form-group">
+                <label for="title">Job Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="skills">Skills</label>
+                <input type="text" class="form-control" id="skills" name="skills" required>
+            </div>
+            <div class="form-group">
+                <label for="experience">Experience</label>
+                <input type="text" class="form-control" id="experience" name="experience" required>
+            </div>
+            <div class="form-group">
+                <label for="projects">Projects</label>
+                <input type="text" class="form-control" id="projects" name="projects" required>
+            </div>
+            <div class="form-group">
+                <label for="education">Education</label>
+                <input type="text" class="form-control" id="education" name="education" required>
+            </div>
+            <div class="form-group">
+                <label for="qualifications">Qualifications</label>
+                <input type="text" class="form-control" id="qualifications" name="qualifications" required>
+            </div>
+            <div class="form-group">
+                <label for="company_id">Company</label>
+                <select class="form-control" id="company_id" name="company_id" required>
+                    <option value="">Select a company</option>
+                    {% for company in companies %}
+                        <option value="{{ company[0] }}">{{ company[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Add Company Form -->
+
+            <button type="submit" class="btn btn-primary">Save Job</button>
+            <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+        </form>
+        <h3 class="mt-5">Add New Company</h3>
+        <form method="POST" action="{{ url_for('add_company') }}">
+            <div class="form-group">
+                <label for="company_name">Company Name</label>
+                <input type="text" class="form-control" id="company_name" name="company_name" required>
+            </div>
+            <div class="form-group">
+                <label for="logo_url">Logo URL</label>
+                <input type="text" class="form-control" id="logo_url" name="logo_url">
+            </div>
+            <div class="form-group">
+                <label for="career_page_url">Career Page URL</label>
+                <input type="text" class="form-control" id="career_page_url" name="career_page_url">
+            </div>
+            <button type="submit" class="btn btn-success">Add Company</button>
+        </form>
+        <h3 class="mt-5">Edit Company</h3>
+<form method="POST" action="{{ url_for('update_company_route', company_id=0) }}" id="editCompanyForm">
+    <input type="hidden" name="company_id" id="edit_company_id" value="">
+    <div class="form-group">
+        <label for="edit_company_name">Company Name</label>
+        <input type="text" class="form-control" id="edit_company_name" name="company_name" required>
+    </div>
+    <div class="form-group">
+        <label for="edit_logo_url">Logo URL</label>
+        <input type="text" class="form-control" id="edit_logo_url" name="logo_url">
+    </div>
+    <div class="form-group">
+        <label for="edit_career_page_url">Career Page URL</label>
+        <input type="text" class="form-control" id="edit_career_page_url" name="career_page_url">
+    </div>
+    <button type="submit" class="btn btn-warning">Update Company</button>
+</form>
+        <h3 class="mt-5">Available Companies</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Logo URL</th>
+            <th>Career Page URL</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for company in companies %}
+            <tr>
+                <td>{{ company[0] }}</td>
+                <td>{{ company[1] }}</td>
+                <td>{{ company[2] }}</td>
+                <td>{{ company[3] }}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="editCompany({{ company[0] }}, '{{ company[1] }}', '{{ company[2] }}', '{{ company[3] }}')">Edit</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+        <!-- Job List -->
+        <h3 class="mt-5">Available Jobs ({{ jobs|length }})</h3>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Skills</th>
+                    <th>Experience</th>
+                    <th>Projects</th>
+                    <th>Education</th>
+                    <th>Qualifications</th>
+                    <th>Company</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                    <tr>
+                        <td>{{ job[0] }}</td>
+                        <td>{{ job[1] }}</td>
+                        <td>{{ job[2] }}</td>
+                        <td>{{ job[3] }}</td>
+                        <td>{{ job[4] }}</td>
+                        <td>{{ job[5] }}</td>
+                        <td>{{ job[6] }}</td>
+                        <td>{{ job[7] }}</td>
+                        <td>{{ job[8] }}</td>
+                        <td>
+                            <form action="{{ url_for('view_job', job_id=job[0]) }}" method="GET" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-primary">View Job</button>
+                            </form>
+                            <button class="btn btn-sm btn-warning" onclick="editJob({{ job[0] }})">Edit_job</button>
+                            <form action="{{ url_for('delete_jobs', job_id=job[0]) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to populate the form for editing
+        function editJob(jobId) {
+            fetch(`/admin/jobs/${jobId}`)
+                .then(response => response.json())
+                .then(job => {
+                    document.getElementById("job_id").value = job.id;
+                    document.getElementById("title").value = job.title;
+                    document.getElementById("description").value = job.description;
+                    document.getElementById("skills").value = job.skills;
+                    document.getElementById("experience").value = job.experience;
+                    document.getElementById("projects").value = job.projects;
+                    document.getElementById("education").value = job.education;
+                    document.getElementById("qualifications").value = job.qualifications;
+                    document.getElementById("company_id").value = job.company_id;
+                });
+        }
+
+        // Function to clear the form
+        function clearForm() {
+            document.getElementById("job_id").value = "";
+            document.getElementById("title").value = "";
+            document.getElementById("description").value = "";
+            document.getElementById("skills").value = "";
+            document.getElementById("experience").value = "";
+            document.getElementById("projects").value = "";
+            document.getElementById("education").value = "";
+            document.getElementById("qualifications").value = "";
+            document.getElementById("company_id").value = "";
+        }
+        function editCompany(companyId, companyName, logoUrl, careerPageUrl) {
+        document.getElementById("edit_company_id").value = companyId;
+        document.getElementById("edit_company_name").value = companyName;
+        document.getElementById("edit_logo_url").value = logoUrl;
+        document.getElementById("edit_career_page_url").value = careerPageUrl;
+
+        // Update the form action URL with the correct company ID
+        document.getElementById("editCompanyForm").action = `/update_company/${companyId}`;
+    }
+    </script>
+</body>
+</html>

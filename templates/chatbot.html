@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('./static/chatbot.jpg'); /* Add your background image URL here */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Chatbot Container */
+        .chatbot-container {
+            width: 400px;
+            height: 600px;
+            background-color: rgba(255, 255, 255, 0.2); /* Transparent background */
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px); /* Adds a blur effect to the background */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for visibility */
+        }
+
+        /* Chatbox Header */
+        .chatbox-header {
+            background-color: rgba(0, 123, 255, 0.8); /* Semi-transparent blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Chatbox Body */
+        #chatbox {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: rgba(249, 249, 249, 0.3); /* Semi-transparent background */
+            border-bottom: 1px solid rgba(221, 221, 221, 0.3); /* Light border */
+        }
+
+        /* Message Bubbles */
+        .message {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.bot {
+            align-items: flex-start;
+        }
+
+        .message p {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .message.user p {
+            background-color: rgba(0, 123, 255, 0.8); /* Semi-transparent blue */
+            color: white;
+            border-radius: 10px 10px 0 10px;
+        }
+
+        .message.bot p {
+            background-color: rgba(233, 236, 239, 0.8); /* Semi-transparent gray */
+            color: #333;
+            border-radius: 10px 10px 10px 0;
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent background */
+            border-top: 1px solid rgba(221, 221, 221, 0.3); /* Light border */
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgba(221, 221, 221, 0.5); /* Light border */
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+        }
+
+        #userInput:focus {
+            border-color: rgba(0, 123, 255, 0.8); /* Semi-transparent blue */
+        }
+
+        .input-area button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: rgba(0, 123, 255, 0.8); /* Semi-transparent blue */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-area button:hover {
+            background-color: rgba(0, 86, 179, 0.8); /* Darker semi-transparent blue */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scrollbar Styling */
+        #chatbox::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chatbox::-webkit-scrollbar-track {
+            background: rgba(241, 241, 241, 0.3); /* Semi-transparent track */
+        }
+
+        #chatbox::-webkit-scrollbar-thumb {
+            background: rgba(136, 136, 136, 0.5); /* Semi-transparent thumb */
+            border-radius: 4px;
+        }
+
+        #chatbox::-webkit-scrollbar-thumb:hover {
+            background: rgba(85, 85, 85, 0.7); /* Darker semi-transparent thumb */
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <!-- Chatbox Header -->
+        <div class="chatbox-header">
+            Chatbot Assistant
+        </div>
+
+        <!-- Chatbox Body -->
+        <div id="chatbox">
+            <!-- Messages will appear here -->
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            if (!userInput) return;
+
+            // Display user message
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML += `
+                <div class="message user">
+                    <p>${userInput}</p>
+                </div>
+            `;
+
+            // Send message to the server
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display chatbot response
+                chatbox.innerHTML += `
+                    <div class="message bot">
+                        <p>${data.response}</p>
+                    </div>
+                `;
+                chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom
+            })
+            .catch(error => console.error('Error:', error));
+
+            // Clear input field
+            document.getElementById('userInput').value = '';
+        }
+    </script>
+</body>
+</html>

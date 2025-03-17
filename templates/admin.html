@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            font-weight: bold;
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .table th {
+            background-color: #343a40;
+            color: white;
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .btn-view {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-view:hover {
+            background-color: #218838;
+        }
+        .btn-danger:hover {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Admin Panel</a>
+        <div>
+            <a href="{{ url_for('view_applications') }}" class="btn btn-info">View Application</a>
+            <a class="btn btn-info" href="{{ url_for('admin_jobs') }}">Manage Jobs</a>
+            <a class="btn btn-danger" href="{{ url_for('admin_logout') }}">Logout</a>
+        </div>
+    </nav>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    <div class="container mt-4">
+        <h1 class="text-center">Admin Panel</h1>
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>Branch</th>
+                    <th>Registration Number</th>
+                    <th>Bio</th>
+                    <th>Photo</th>
+                    <th>ATS Score</th>
+                    <th>Missing Skills</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in user %}
+                <tr>
+                    <td>{{ user['name'] }}</td>
+                    <td>{{ user['rollno'] }}</td>
+                    <td>{{ user['branch'] }}</td>
+                    <td>{{ user['registration_no'] }}</td>
+                    <td>{{ user['bio'] }}</td>
+                    <td><img src="{{ user['photo_url'] }}" alt="User Photo" width="100"></td>
+                    <td>{{ user['ats_score'] if user['ats_score'] else 'Not Available' }}%</td>
+                    <td>
+                        {% if user['missing_skills'] %}
+                            <ul>
+                                {% for skill in user['missing_skills'] %}
+                                    <li>{{ skill }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            No missing skills
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{{ url_for('admin_success', user_id=user['_id'] )}}" class="btn btn-info">View</a>
+                            <a href="{{ url_for('edit_user', user_id=user['_id']) }}" class="btn btn-warning">Edit</a>
+                            <a href="{{ url_for('view_resume', user_id=user['_id']) }}" class="btn btn-view">View Resume</a>
+                            <form action="{{ url_for('get_admin_update_resume', user_id=user['_id']) }}" method="get">
+                                <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to update your resume?')">
+                                    Update Resume
+                                </button>
+                            </form>
+                            <form action="{{ url_for('delete_user', user_id=user['_id']) }}" method="post">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your details?')">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

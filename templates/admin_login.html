@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glassmorphism Login Form | CodingNepal</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Open Sans", sans-serif;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, rgba(0, 150, 255, 0.8), rgba(255, 100, 200, 0.8));
+      padding: 0 10px;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url("static/login-hero-bg.jpg"), #000; /* Fallback to black if image doesn't load */
+      background-position: center;
+      background-size: cover;
+      opacity: 0.5;
+    }
+    .wrapper {
+      width: 400px;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    h2 {
+      color: white;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .input-field {
+      position: relative;
+      margin-bottom: 25px;
+    }
+    .input-field input {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    .input-field input:focus {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5);
+    }
+    .input-field label {
+      position: absolute;
+      top: 0;
+      left: 10px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.3s ease;
+    }
+    .input-field input:focus + label {
+      top: -20px;
+      font-size: 12px;
+      color: #ffffff;
+    }
+    .forget {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      color: white;
+    }
+    .forget label {
+      font-size: 14px;
+    }
+    .forget a {
+      color: white;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .forget a:hover {
+      text-decoration: underline;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: #00bcd4;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #0097a7;
+      transform: translateY(-2px);
+    }
+    .register {
+      margin-top: 20px;
+      color: white;
+    }
+    .register a {
+      color: #00bcd4;
+      text-decoration: none;
+    }
+    .register a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h2>Admin Login with Face</h2>
+    <form action="/admin_login_face_get" method="GET">
+      <button type="submit">Login with Face</button>
+    </form>
+    <br>
+    <br>
+      <p><b>or</b></p>
+    <form id="adminLoginForm">
+      <h2>Admin Login</h2>
+      
+      <div class="input-field">
+        <input id="name" type="text" required>
+        <label for="name">Enter your name</label>
+      </div>
+      <div class="input-field">
+        <input id="password" type="password" required>
+        <label for="password">Enter your password</label>
+      </div>
+      <div class="forget">
+        <label for="remember">
+          <input type="checkbox" id="remember">
+          <p>Remember me</p>
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit" onclick="submitAdminLogin(event)">Log In</button>
+      <div class="register">
+        <p>Don't have an account? <a href="{{ url_for('admin_register') }}">Admin Register</a></p>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function submitAdminLogin(event) {
+      event.preventDefault();  // Prevent form from submitting normally
+
+      const name = document.getElementById("name").value;
+      const password = document.getElementById("password").value;
+
+      if (!name || !password) {
+        alert("Name and password are required.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("password", password);
+
+      fetch("/admin_login", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Login successful!");
+          window.location.href = "/admin";  // Redirect to admin dashboard
+        } else {
+          alert("Login failed: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred during login.");
+      });
+    }
+  </script>
+</body>
+</html>

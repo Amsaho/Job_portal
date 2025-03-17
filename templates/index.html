@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>Dashboard</title>
+    <style>
+        /* Reset default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1573497491208-6b1acb260507?w=1600') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            width: 100%;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .navbar ul li {
+            margin: 0 15px;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .navbar ul li a:hover {
+            color: #ffcc00;
+        }
+
+        /* Dashboard Container */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            margin-top: 100px;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-weight: bold;
+            font-size: 32px;
+            color: black;
+            text-transform: uppercase;
+        }
+
+        /* Buttons */
+        .dashboard-links a {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 25px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            border-radius: 6px;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-links a:hover {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            transform: translateY(-3px);
+        }
+
+        /* Floating Job Section */
+        @keyframes slide {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-2000%);
+    }
+}
+
+.floating-jobs {
+    position: fixed;
+    bottom: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    z-index: 999;
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+    transition: bottom 0.5s ease-in-out;
+}
+
+.floating-jobs.show {
+    bottom: 60px;
+     /* Adjust duration as needed */
+}
+
+.job-card {
+    display: inline-block;
+    width: 300px;
+    margin: 0 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.5);;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: slide 100s linear infinite;
+     /* Apply the same animation */
+}
+        .close-floating-jobs {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .close-floating-jobs:hover {
+            background: rgba(255, 0, 0, 0.9);
+        }
+
+        
+
+        .job-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+           
+        }
+
+        .view-job-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .view-job-btn:hover {
+            background: #0056b3;
+        }
+        .close-btn {
+            background: #ff5b5b;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover {
+            background: #e04545;
+        }
+        
+
+        .contact-section {
+            width: 100%;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            margin-top: 200px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .contact-section.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .contact-section h2 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        .contact-section p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        /* Footer */
+        .footer {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 14px;
+        }
+        .about-me-container {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .about-me-container h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .about-me-container p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .about-me-container ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .about-me-container ul li {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .about-me-container button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .about-me-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+        .contact-section {
+            width: 100%;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            margin-top: 200px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .contact-section.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .contact-section h2 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        .contact-section p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a class="logo" href="{{ url_for('api_job') }}"> Job Portal</a>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#" onclick="toggleJobs()">Jobs</a></li>
+            <li><a href="#" onclick="openAboutMe()">About Me</a></li>
+            <li><a href="#" onclick="toggleContact()">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Floating Job Cards -->
+    <div class="floating-jobs" id="floatingJobs">
+        
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="container">
+        <h1><strong>Welcome to the JOB PORTAL AND AI RESUME DETECTION SYSTEM</strong></h1>
+        <div class="dashboard-links">
+            <a href="{{ url_for('admin_login') }}">Admin Login</a>
+            <a href="{{ url_for('admin_register') }}">Admin Register</a>
+            <a href="{{ url_for('user_login') }}">User Login</a>
+            <a href="{{ url_for('user_register') }}">User Register</a>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="about-me-container" id="aboutMeContainer">
+        <h2>About This System</h2>
+        <p>
+            This is a Flask-based Resume Analysis and Job Recommendation System. 
+            It helps users upload and analyze resumes, extract skills, and match them with suitable jobs. 
+            Key features include:
+        </p>
+        <ul>
+            <li><strong>Resume Upload & Parsing:</strong> Users can upload their resumes in PDF format. The system extracts text from the resume for further analysis.</li>
+            <li><strong>AI-based Skill Extraction:</strong> Using Natural Language Processing (NLP) with spaCy, the system identifies and extracts relevant skills from the resume text.</li>
+            <li><strong>Job Recommendations:</strong> Based on the extracted skills and resume content, the system calculates an ATS (Applicant Tracking System) score and recommends the most suitable jobs.</li>
+            <li><strong>Face Recognition Login:</strong> Secure login using face recognition technology, ensuring only authorized users can access their accounts.</li>
+            <li><strong>Admin Panel:</strong> Admins can manage users, job postings, and applications. They can also update application statuses and send email notifications.</li>
+            <li><strong>PDF Resume Generation:</strong> Users can generate professional PDF resumes with their details, including a profile photo, skills, experience, and education.</li>
+            <li><strong>Google OAuth Integration:</strong> Users can log in using their Google accounts for a seamless and secure authentication experience.</li>
+            <li><strong>Email Notifications:</strong> Automated email notifications for job application confirmations, acceptances, and rejections.</li>
+            <li><strong>Chatbot Assistance:</strong> A chatbot powered by Google's Gemini API provides instant help for common queries related to resumes, job applications, and more.</li>
+            <li><strong>Dynamic Job Fetching:</strong> The system fetches job listings from external APIs and stores them in a local database for easy access and search.</li>
+        </ul>
+        <p>
+            This system is designed to streamline the job application process, making it easier for users to find the right opportunities and for employers to identify the best candidates.
+        </p>
+        <button onclick="closeAboutMe()">Close</button>
+    </div>
+
+    <!-- Contact Section -->
+    <div id="contact" class="contact-section">
+        <h2>Contact Us</h2>
+        <p><strong>Email:</strong> support@jobportal.com</p>
+        <p><strong>Phone:</strong> +91 6370309469</p>
+        <p><strong>Address:</strong> Bhubaneswar </p>
+    </div>
+
+    
+    <!-- Footer -->
+    <div class="footer">
+        Amlan, Biswa, Jyoti &copy; 2025 Job Portal. All rights reserved.
+    </div>
+
+    <script>
+         
+        function toggleJobs() {
+            let floatingJobs = document.getElementById("floatingJobs");
+
+            if (floatingJobs.classList.contains("show")) {
+                floatingJobs.classList.remove("show");
+            } else {
+                floatingJobs.classList.add("show");
+
+                // Fetch jobs dynamically
+                fetch("/get_jobs")
+                    .then(response => response.json())
+                    .then(data => {
+                        
+
+                        data.forEach(job => {
+                            let jobCard = document.createElement("div");
+                            jobCard.className = "job-card";
+                            jobCard.innerHTML = `
+                                <img src="${job.logo_url}" alt="${job.company} Logo">
+                                <h3>${job.title}</h3>
+                                <p class="company">${job.company}</p>
+                                
+                                <a href="/view_job/${job.id}" class="view-job-btn" target="_blank">View Job</a>
+                            `;
+                            floatingJobs.appendChild(jobCard);
+                        });
+                    });
+            }
+        }
+
+        
+        function toggleContact() {
+            var contactSection = document.getElementById("contact");
+            if (contactSection.classList.contains("show")) {
+                contactSection.classList.remove("show");
+                setTimeout(() => {
+                    contactSection.style.display = "none";
+                }, 500);
+            } else {
+                contactSection.style.display = "block";
+                setTimeout(() => {
+                    contactSection.classList.add("show");
+                }, 10);
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Load jobs automatically when the page loads
+        document.addEventListener("DOMContentLoaded", openJobs);
+        function openAboutMe() {
+            document.getElementById("aboutMeContainer").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        // Function to close the About Me section
+        function closeAboutMe() {
+            document.getElementById("aboutMeContainer").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        // Close the About Me section if the user clicks outside of it
+        document.getElementById("overlay").addEventListener("click", closeAboutMe);
+    </script>
+
+</body>
+</html>

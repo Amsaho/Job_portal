@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Job Listings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    padding: 2rem;
+}
+
+.job-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.job-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+}
+
+.company-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.company-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.company-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.job-title {
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.job-description {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.skill-tag {
+    background-color: #e5e7eb;
+    color: #374151;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+}
+
+.apply-btn {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.apply-btn:hover {
+    background-color: #059669;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+    
+    .job-container {
+        grid-template-columns: 1fr;
+    }
+}
+.search-container {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-button {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
+        }
+
+        .search-button:hover {
+            background-color: #059669;
+        }
+
+        .search-button i {
+            font-size: 1rem; /* Adjust icon size */
+        }
+
+.suggestions-dropdown {
+background: white;
+border: 1px solid #e5e7eb;
+border-radius: 8px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+max-height: 200px;
+overflow-y: auto;
+margin-top: 0.5rem;
+display: none; /* Hidden by default */
+}
+
+.suggestion-item {
+padding: 0.75rem;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+background-color: #f3f4f6;
+}
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <form class="search-form" onsubmit="filterJobs(event)">
+            <input type="text" id="search-all" class="search-input" placeholder="Search by job title, company, or location" oninput="fetchSuggestions('all')">
+            <button type="submit" class="search-button" > <i class="fas fa-search"></i> Search</button>
+        </form>
+        <!-- Suggestions Dropdown -->
+        <div id="suggestions-dropdown" class="suggestions-dropdown"></div>
+    </div>
+
+    <div class="job-container">
+        {% for job in jobs %}
+        <div class="job-card" 
+             data-title="{{ job.title }}" 
+             data-location="{{ job.location }}" 
+             data-company="{{ job.company }}">
+            <div class="company-info">
+                <img class="company-logo" src="{{ job.logo_url }}" alt="{{ job.company }} Logo">
+                <span class="company-name">{{ job.company }}</span>
+            </div>
+            <h3 class="job-title">{{ job.title }}</h3>
+            <p class="job-description">{{ job.description }}</p>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p><strong>Package:</strong> {{ job.package }}</p>
+            <br>
+            <div class="skills-list">
+                {% for skill in job.skills.split(',') %}
+                <span class="skill-tag">{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+            <button class="apply-btn" onclick="applyJob('{{ job.id }}')">Apply Now</button>
+            <form action="{{ url_for('view_job', job_id=job['id']) }}" method="GET" style="display: inline;">
+                <button type="submit" class="apply-btn">View Job</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="GET" action="/user_profile">
+        <button class="apply-btn">Back to Profile</button>
+    </form>
+
+    <script>
+        // Function to filter jobs based on search criteria
+       // Function to filter jobs based on search criteria
+function filterJobs(event) {
+    // Prevent default form submission if event is provided
+    if (event) {
+        event.preventDefault();
+    }
+
+    const searchQuery = document.getElementById('search-all').value.toLowerCase();
+
+    const jobCards = document.querySelectorAll('.job-card');
+
+    jobCards.forEach(card => {
+        const cardTitle = card.getAttribute('data-title') || ''; // Default to empty string if null
+        const cardLocation = card.getAttribute('data-location') || ''; // Default to empty string if null
+        const cardCompany = card.getAttribute('data-company') || ''; // Default to empty string if null
+
+        const matchesTitle = cardTitle.toLowerCase().includes(searchQuery);
+        const matchesLocation = cardLocation.toLowerCase().includes(searchQuery);
+        const matchesCompany = cardCompany.toLowerCase().includes(searchQuery);
+
+        if (matchesTitle || matchesLocation || matchesCompany) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Function to handle suggestion selection
+function selectSuggestion(value) {
+    document.getElementById('search-all').value = value;
+    document.getElementById('suggestions-dropdown').style.display = 'none';
+
+    // Call filterJobs without an event object
+    filterJobs(null); // or filterJobs();
+}
+
+// Function to fetch suggestions based on user input
+function fetchSuggestions(field) {
+    const input = document.getElementById('search-all').value.trim();
+    if (input.length < 2) {
+        document.getElementById('suggestions-dropdown').style.display = 'none';
+        return;
+    }
+
+    fetch(`/suggestions?query=${encodeURIComponent(input)}`)
+        .then(response => response.json())
+        .then(data => {
+            const dropdown = document.getElementById('suggestions-dropdown');
+            dropdown.innerHTML = ''; // Clear previous suggestions
+
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const suggestion = document.createElement('div');
+                    suggestion.className = 'suggestion-item';
+                    suggestion.textContent = item;
+                    suggestion.onclick = () => selectSuggestion(item);
+                    dropdown.appendChild(suggestion);
+                });
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Error fetching suggestions:', error));
+}
+
+// Function to fetch and display a specific job card
+function fetchJobCard(jobId) {
+    fetch(`/view_job/${jobId}`)
+        .then(response => response.json())
+        .then(data => {
+            const jobContainer = document.querySelector('.job-container');
+            jobContainer.innerHTML = ''; // Clear all job cards
+
+            // Create and display the selected job card
+            const jobCard = document.createElement('div');
+            jobCard.className = 'job-card';
+            jobCard.innerHTML = `
+                <div class="company-info">
+                    <img class="company-logo" src="${data.logo_url}" alt="${data.company} Logo">
+                    <span class="company-name">${data.company}</span>
+                </div>
+                <h3 class="job-title">${data.title}</h3>
+                <p class="job-description">${data.description}</p>
+                <p><strong>Location:</strong> ${data.location}</p>
+                <div class="skills-list">
+                    ${data.skills.split(',').map(skill => `<span class="skill-tag">${skill.trim()}</span>`).join('')}
+                </div>
+                <button class="apply-btn" onclick="applyJob('${data.id}')">Apply Now</button>
+                <form action="/view_job/${data.id}" method="GET" style="display: inline;">
+                    <button type="submit" class="apply-btn">View Job</button>
+                </form>
+            `;
+            jobContainer.appendChild(jobCard);
+        })
+        .catch(error => console.error('Error fetching job card:', error));
+}
+function applyJob(job_id) {
+            if (!job_id) {
+                alert("Error: Invalid job title");
+                return;
+            }
+
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Applying...';
+            button.style.backgroundColor = '#6ee7b7';
+
+            const encodedJobId = encodeURIComponent(job_id);
+            const url = `/apply_job/${encodedJobId}`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Application failed: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                button.style.backgroundColor = '#10b981';
+                button.textContent = 'Applied!';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message);
+                button.disabled = false;
+                button.textContent = 'Apply Now';
+                button.style.backgroundColor = '#10b981';
+            });
+        }
+    </script>
+</body>
+</html>
